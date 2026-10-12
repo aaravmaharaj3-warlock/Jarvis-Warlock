@@ -1,5 +1,6 @@
-import Anthropic from "@anthropic-ai/sdk";
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const SUBBOTS = {
   researcher: "You are a research sub-bot. Search and summarize facts concisely, citing sources.",
@@ -15,24 +16,22 @@ Otherwise, answer directly yourself.`;
 export async function POST(req) {
   const { message } = await req.json();
 
-  const first = await anthropic.messages.create({
-    model: "claude-sonnet-4-5",
-    max_tokens: 500,
-    system: JARVIS_PROMPT,
-    messages: [{ role: "user", content: message }],
+  const jarvisModel = genAI.getGenerativeModel({
+    model: "gemini-1.5-flash",
+    systemInstruction: JARVIS_PROMPT,
   });
 
-  const text = first.content[0].text;
+  const first = await jarvisModel.generateContent(message);
+  const text = first.response.text();
 
   if (text.startsWith("DELEGATE:")) {
     const [, botName, task] = text.split(":");
-    const sub = await anthropic.messages.create({
-      model: "claude-sonnet-4-5",
-      max_tokens: 1000,
-      system: SUBBOTS[botName.trim()],
-      messages: [{ role: "user", content: task }],
+    const subModel = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      systemInstruction: SUBBOTS[botName.trim()],
     });
-    return Response.json({ reply: sub.content[0].text, via: botName });
+    const sub = await subModel.generateContent(task);
+    return Response.json({ reply: sub.response.text(), via: botName });
   }
 
   return Response.json({ reply: text, via: "jarvis" });
