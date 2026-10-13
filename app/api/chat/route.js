@@ -2,6 +2,8 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
+const MODEL = "gemini-2.5-flash";
+
 const SUBBOTS = {
   researcher: "You are a research sub-bot. Search and summarize facts concisely, citing sources.",
   coder: "You are a coding sub-bot. Write clean, working code and explain it briefly.",
@@ -14,25 +16,31 @@ If yes, reply with exactly: DELEGATE:<name>:<task>
 Otherwise, answer directly yourself.`;
 
 export async function POST(req) {
-  const { message } = await req.json();
+  try {
+    const { message } = await req.json();
 
-  const jarvisModel = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
-    systemInstruction: JARVIS_PROMPT,
-  });
-
-  const first = await jarvisModel.generateContent(message);
-  const text = first.response.text();
-
-  if (text.startsWith("DELEGATE:")) {
-    const [, botName, task] = text.split(":");
-    const subModel = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
-      systemInstruction: SUBBOTS[botName.trim()],
+    const jarvisModel = genAI.getGenerativeModel({
+      model: MODEL,
+      systemInstruction: JARVIS_PROMPT,
     });
-    const sub = await subModel.generateContent(task);
-    return Response.json({ reply: sub.response.text(), via: botName });
-  }
 
-  return Response.json({ reply: text, via: "jarvis" });
+    const first = await jarvisModel.generateContent(message);
+    const text = first.response.text();
+
+    if (text.startsWith("DELEGATE:")) {
+      const [, botName, ...rest] = text.split(":");
+      const task = rest.join(":");
+      const instruction = SUBBOTS[botName.trim()] || SUBBOTS.researcher;
+      const subModel = genAI.getGenerativeModel({
+        model: MODEL,
+        systemInstruction: instruction,
+      });
+      const sub = await subModel.generateContent(task);
+      return Response.json({ reply: sub.response.text(), via: botName });
+    }
+
+    return Response.json({ reply: text, via: "jarvis" });
+  } catch (err) {
+    return Response.json({ reply: "Sorry, something went wrong: " + err.message }, { status: 200 });
+  }
 }
