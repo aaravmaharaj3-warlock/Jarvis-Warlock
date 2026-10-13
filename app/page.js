@@ -37,19 +37,16 @@ export default function Home() {
     if (!toSend) return;
     setMessages((m) => [...m, { role: "user", text: toSend }]);
     setInput("");
-
     const res = await fetch("/api/chat", {
       method: "POST",
       body: JSON.stringify({ message: toSend }),
     });
     const data = await res.json();
     setMessages((m) => [...m, { role: "jarvis", text: data.reply }]);
-
     const lower = data.reply.toLowerCase();
     if (lower.includes("blue theme")) setTheme("blue");
     if (lower.includes("red theme")) setTheme("red");
     if (lower.includes("green theme")) setTheme("green");
-
     const utter = new SpeechSynthesisUtterance(data.reply);
     utter.lang = "en-GB";
     utter.onstart = () => setSpeaking(true);
@@ -59,10 +56,7 @@ export default function Home() {
 
   function startListening() {
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!Recognition) {
-      alert("Voice input isn't supported in this browser.");
-      return;
-    }
+    if (!Recognition) { alert("Voice input isn't supported in this browser."); return; }
     const recognition = new Recognition();
     recognition.lang = "en-GB";
     recognition.interimResults = true;
@@ -80,7 +74,7 @@ export default function Home() {
     <main style={{
       background: t.bg, color: t.fg, fontFamily: "sans-serif",
       position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
-      display: "flex", flexDirection: "column"
+      display: "flex", flexDirection: "column", overflow: "hidden"
     }}>
       <style>{`
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -93,34 +87,40 @@ export default function Home() {
           0%, 100% { opacity: 0.4; }
           50% { opacity: 1; }
         }
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.3; }
+        }
       `}</style>
+
+      {/* corner decorations */}
+      <div style={{ position: "absolute", top: 10, left: 10, fontSize: 9, letterSpacing: 1, opacity: 0.6, border: `1px solid ${t.glow}`, borderRight: "none", borderBottom: "none", padding: "4px 8px" }}>
+        SYSTEM ONLINE
+      </div>
+      <div style={{ position: "absolute", top: 10, right: 10, fontSize: 9, letterSpacing: 1, opacity: 0.6, border: `1px solid ${t.glow}`, borderLeft: "none", borderBottom: "none", padding: "4px 8px" }}>
+        VOICE INPUT
+      </div>
+      <div style={{ position: "absolute", bottom: 70, left: 10, fontSize: 9, letterSpacing: 1, opacity: 0.6, animation: active ? "blink 1s infinite" : "none" }}>
+        ● AI ACTIVE
+      </div>
+      <div style={{ position: "absolute", bottom: 70, right: 10, fontSize: 9, letterSpacing: 1, opacity: 0.6 }}>
+        TRANSCEIVER
+      </div>
 
       <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(255,255,255,0.1)", flexShrink: 0, textAlign: "center" }}>
         <h1 style={{ margin: 0, fontSize: 24, letterSpacing: 4 }}>J.A.R.V.I.S.</h1>
       </div>
 
       <div style={{ display: "flex", justifyContent: "center", padding: "20px 0", flexShrink: 0 }}>
-        <div style={{ position: "relative", width: 140, height: 140 }}>
-          <div style={{
-            position: "absolute", inset: 0, borderRadius: "50%",
-            border: `2px solid ${t.glow}`, opacity: 0.5,
-            animation: `spin ${active ? 4 : 10}s linear infinite`,
-            borderStyle: "dashed",
-          }} />
-          <div style={{
-            position: "absolute", inset: 14, borderRadius: "50%",
-            border: `2px solid ${t.glow}`, opacity: 0.6,
-            animation: `spinReverse ${active ? 3 : 8}s linear infinite`,
-          }} />
-          <div style={{
-            position: "absolute", inset: 30, borderRadius: "50%",
-            border: `1px solid ${t.glow}`,
-            animation: `ringPulse ${active ? 0.8 : 2.5}s ease-in-out infinite`,
-          }} />
+        <div style={{ position: "relative", width: 150, height: 150 }}>
+          <div style={{ position: "absolute", inset: -10, borderRadius: "50%", border: `1px dotted ${t.glow}`, opacity: 0.3, animation: `spin ${active ? 6 : 14}s linear infinite` }} />
+          <div style={{ position: "absolute", inset: 0, borderRadius: "50%", border: `2px dashed ${t.glow}`, opacity: 0.5, animation: `spin ${active ? 4 : 10}s linear infinite` }} />
+          <div style={{ position: "absolute", inset: 14, borderRadius: "50%", border: `2px solid ${t.glow}`, opacity: 0.6, animation: `spinReverse ${active ? 3 : 8}s linear infinite` }} />
+          <div style={{ position: "absolute", inset: 30, borderRadius: "50%", border: `1px solid ${t.glow}`, animation: `ringPulse ${active ? 0.8 : 2.5}s ease-in-out infinite` }} />
           <div style={{
             position: "absolute", top: "50%", left: "50%", width: 36, height: 36,
             marginLeft: -18, marginTop: -18, borderRadius: "50%",
-            background: t.glow, boxShadow: `0 0 20px 6px ${t.glow}`,
+            background: t.glow, boxShadow: `0 0 25px 8px ${t.glow}`,
             animation: `corePulse ${active ? 0.6 : 2}s ease-in-out infinite`,
           }} />
         </div>
