@@ -1,6 +1,17 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 
+function MicIcon({ color = "currentColor", size = 20 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+      <line x1="12" y1="19" x2="12" y2="23"></line>
+      <line x1="8" y1="23" x2="16" y2="23"></line>
+    </svg>
+  );
+}
+
 export default function Home() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -98,7 +109,7 @@ export default function Home() {
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: 10, flexShrink: 0 }}>
           <div style={{ position: "relative", width: 60, height: 60, display: "flex", alignItems: "center", justifyContent: "center" }}>
             <div style={{ position: "absolute", width: 60, height: 60, borderRadius: "50%", background: t.fg, animation: "pulse 1.2s infinite ease-in-out" }} />
-            <div style={{ position: "relative", fontSize: 24 }}>🎤</div>
+            <div style={{ position: "relative" }}><MicIcon color={t.bg} size={24} /></div>
           </div>
         </div>
       )}
@@ -111,8 +122,8 @@ export default function Home() {
           placeholder="Message Jarvis..."
           style={{ flex: 1, padding: "10px 14px", borderRadius: 20, border: "none", outline: "none" }}
         />
-        <button onClick={startListening} style={{ borderRadius: 20, padding: "10px 16px", border: "none", background: listening ? t.fg : t.bubble, color: listening ? t.bg : t.fg }}>
-          🎤
+        <button onClick={startListening} style={{ borderRadius: 20, padding: "10px 16px", border: "none", background: listening ? t.fg : t.bubble, display: "flex", alignItems: "center" }}>
+          <MicIcon color={listening ? t.bg : t.fg} />
         </button>
         <button onClick={() => send()} style={{ borderRadius: 20, padding: "10px 18px", border: "none", background: t.fg, color: t.bg, fontWeight: "bold" }}>
           Send
