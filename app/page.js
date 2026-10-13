@@ -67,6 +67,14 @@ export default function Home() {
       position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
       display: "flex", flexDirection: "column"
     }}>
+      <style>{`
+        @keyframes pulse {
+          0% { transform: scale(1); opacity: 0.7; }
+          50% { transform: scale(1.5); opacity: 0.2; }
+          100% { transform: scale(1); opacity: 0.7; }
+        }
+      `}</style>
+
       <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(255,255,255,0.1)", flexShrink: 0, textAlign: "center" }}>
         <h1 style={{ margin: 0, fontSize: 24, letterSpacing: 2 }}>JARVIS</h1>
       </div>
@@ -85,6 +93,15 @@ export default function Home() {
         ))}
         <div ref={bottomRef} />
       </div>
+
+      {listening && (
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: 10, flexShrink: 0 }}>
+          <div style={{ position: "relative", width: 60, height: 60, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ position: "absolute", width: 60, height: 60, borderRadius: "50%", background: t.fg, animation: "pulse 1.2s infinite ease-in-out" }} />
+            <div style={{ position: "relative", fontSize: 24 }}>🎤</div>
+          </div>
+        </div>
+      )}
 
       <div style={{ display: "flex", padding: 12, borderTop: "1px solid rgba(255,255,255,0.1)", gap: 8, flexShrink: 0 }}>
         <input
