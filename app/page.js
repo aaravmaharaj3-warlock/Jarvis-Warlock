@@ -67,7 +67,7 @@ export default function Home() {
       position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
       display: "flex", flexDirection: "column"
     }}>
-      <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(255,255,255,0.1)", flexShrink: 0 }}>
+      <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(255,255,255,0.1)", flexShrink: 0, textAlign: "center" }}>
         <h1 style={{ margin: 0, fontSize: 24, letterSpacing: 2 }}>JARVIS</h1>
       </div>
 
