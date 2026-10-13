@@ -16,15 +16,17 @@ export default function Home() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [listening, setListening] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
   const [theme, setTheme] = useState("blue");
   const bottomRef = useRef(null);
 
   const themes = {
-    blue: { bg: "#0a0e17", fg: "#4fd1ff", bubble: "#121a2b" },
-    red: { bg: "#1a0505", fg: "#ff4f4f", bubble: "#2b1212" },
-    green: { bg: "#05170a", fg: "#4fff8f", bubble: "#122b1a" },
+    blue: { bg: "#050810", fg: "#4fd1ff", bubble: "#121a2b", glow: "#4fd1ff" },
+    red: { bg: "#140404", fg: "#ff4f4f", bubble: "#2b1212", glow: "#ff4f4f" },
+    green: { bg: "#031208", fg: "#4fff8f", bubble: "#122b1a", glow: "#4fff8f" },
   };
   const t = themes[theme];
+  const active = listening || speaking;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -50,6 +52,8 @@ export default function Home() {
 
     const utter = new SpeechSynthesisUtterance(data.reply);
     utter.lang = "en-GB";
+    utter.onstart = () => setSpeaking(true);
+    utter.onend = () => setSpeaking(false);
     speechSynthesis.speak(utter);
   }
 
@@ -79,15 +83,47 @@ export default function Home() {
       display: "flex", flexDirection: "column"
     }}>
       <style>{`
-        @keyframes pulse {
-          0% { transform: scale(1); opacity: 0.7; }
-          50% { transform: scale(1.5); opacity: 0.2; }
-          100% { transform: scale(1); opacity: 0.7; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes spinReverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+        @keyframes corePulse {
+          0%, 100% { transform: scale(1); opacity: 0.9; }
+          50% { transform: scale(1.25); opacity: 1; }
+        }
+        @keyframes ringPulse {
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 1; }
         }
       `}</style>
 
       <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(255,255,255,0.1)", flexShrink: 0, textAlign: "center" }}>
-        <h1 style={{ margin: 0, fontSize: 24, letterSpacing: 2 }}>JARVIS</h1>
+        <h1 style={{ margin: 0, fontSize: 24, letterSpacing: 4 }}>J.A.R.V.I.S.</h1>
+      </div>
+
+      <div style={{ display: "flex", justifyContent: "center", padding: "20px 0", flexShrink: 0 }}>
+        <div style={{ position: "relative", width: 140, height: 140 }}>
+          <div style={{
+            position: "absolute", inset: 0, borderRadius: "50%",
+            border: `2px solid ${t.glow}`, opacity: 0.5,
+            animation: `spin ${active ? 4 : 10}s linear infinite`,
+            borderStyle: "dashed",
+          }} />
+          <div style={{
+            position: "absolute", inset: 14, borderRadius: "50%",
+            border: `2px solid ${t.glow}`, opacity: 0.6,
+            animation: `spinReverse ${active ? 3 : 8}s linear infinite`,
+          }} />
+          <div style={{
+            position: "absolute", inset: 30, borderRadius: "50%",
+            border: `1px solid ${t.glow}`,
+            animation: `ringPulse ${active ? 0.8 : 2.5}s ease-in-out infinite`,
+          }} />
+          <div style={{
+            position: "absolute", top: "50%", left: "50%", width: 36, height: 36,
+            marginLeft: -18, marginTop: -18, borderRadius: "50%",
+            background: t.glow, boxShadow: `0 0 20px 6px ${t.glow}`,
+            animation: `corePulse ${active ? 0.6 : 2}s ease-in-out infinite`,
+          }} />
+        </div>
       </div>
 
       <div style={{ flex: 1, overflowY: "auto", padding: 20, minHeight: 0 }}>
@@ -104,15 +140,6 @@ export default function Home() {
         ))}
         <div ref={bottomRef} />
       </div>
-
-      {listening && (
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: 10, flexShrink: 0 }}>
-          <div style={{ position: "relative", width: 60, height: 60, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ position: "absolute", width: 60, height: 60, borderRadius: "50%", background: t.fg, animation: "pulse 1.2s infinite ease-in-out" }} />
-            <div style={{ position: "relative" }}><MicIcon color={t.bg} size={24} /></div>
-          </div>
-        </div>
-      )}
 
       <div style={{ display: "flex", padding: 12, borderTop: "1px solid rgba(255,255,255,0.1)", gap: 8, flexShrink: 0 }}>
         <input
