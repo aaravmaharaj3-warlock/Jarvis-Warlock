@@ -50,28 +50,34 @@ export default function Home() {
     }
     const recognition = new Recognition();
     recognition.lang = "en-GB";
+    recognition.interimResults = true;
     recognition.onstart = () => setListening(true);
     recognition.onend = () => setListening(false);
-    recognition.onresult = (e) => send(e.results[0][0].transcript);
+    recognition.onresult = (e) => {
+      const transcript = e.results[0][0].transcript;
+      setInput(transcript);
+      if (e.results[0].isFinal) send(transcript);
+    };
     recognition.start();
   }
 
   return (
-    <main style={{ background: t.bg, minHeight: "100vh", color: t.fg, fontFamily: "sans-serif", display: "flex", flexDirection: "column" }}>
-      <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
+    <main style={{
+      background: t.bg, color: t.fg, fontFamily: "sans-serif",
+      position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+      display: "flex", flexDirection: "column"
+    }}>
+      <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(255,255,255,0.1)", flexShrink: 0 }}>
         <h1 style={{ margin: 0, fontSize: 24, letterSpacing: 2 }}>JARVIS</h1>
       </div>
 
-      <div style={{ flex: 1, overflowY: "auto", padding: 20 }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: 20, minHeight: 0 }}>
         {messages.map((m, i) => (
           <div key={i} style={{ display: "flex", justifyContent: m.role === "user" ? "flex-end" : "flex-start", marginBottom: 12 }}>
             <div style={{
               background: m.role === "user" ? t.fg : t.bubble,
               color: m.role === "user" ? t.bg : t.fg,
-              padding: "10px 16px",
-              borderRadius: 18,
-              maxWidth: "75%",
-              lineHeight: 1.4,
+              padding: "10px 16px", borderRadius: 18, maxWidth: "75%", lineHeight: 1.4,
             }}>
               {m.text}
             </div>
@@ -80,7 +86,7 @@ export default function Home() {
         <div ref={bottomRef} />
       </div>
 
-      <div style={{ display: "flex", padding: 12, borderTop: "1px solid rgba(255,255,255,0.1)", gap: 8 }}>
+      <div style={{ display: "flex", padding: 12, borderTop: "1px solid rgba(255,255,255,0.1)", gap: 8, flexShrink: 0 }}>
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
