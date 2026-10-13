@@ -13,12 +13,6 @@ function MenuIcon({ color = "currentColor", size = 22 }) {
   );
 }
 
-function PencilIcon({ color = "currentColor", size = 20 }) {
-  return (
-    
-  );
-}
-
 function PlusIcon({ color = "currentColor", size = 18 }) {
   return (
     
@@ -163,4 +157,4 @@ export default function Home() {
   return (
     
   );
-    }
+      }
