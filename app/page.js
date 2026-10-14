@@ -113,7 +113,7 @@ export default function Home() {
 
       <div style={{ position: "relative", padding: "16px 20px", borderBottom: "1px solid rgba(255,255,255,0.1)", flexShrink: 0, textAlign: "center" }}>
         <button onClick={startNewChat} aria-label="New chat" style={{
-          position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)",
+          position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
           background: "none", border: "none", padding: 8
         }}>
           <PencilIcon color={t.fg} />
