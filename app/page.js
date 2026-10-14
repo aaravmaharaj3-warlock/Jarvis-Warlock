@@ -118,7 +118,7 @@ export default function Home() {
         }}>
           <PencilIcon color={t.fg} />
         </button>
-        <h1 style={{ margin: 0, fontSize: 24, letterSpacing: 4 }}>J.A.R.V.I.S.</h1>
+        <h1 style={{ margin: 0, fontSize: 24, letterSpacing: 2 }}>JARVIS</h1>
       </div>
 
       <div style={{ display: "flex", justifyContent: "center", padding: "20px 0", flexShrink: 0 }}>
@@ -169,4 +169,4 @@ export default function Home() {
       </div>
     </main>
   );
-  }
+}
